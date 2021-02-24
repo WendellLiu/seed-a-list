@@ -23,10 +23,11 @@ impl SystemConfig {
     }
 
     pub fn new() -> SystemConfig {
-        let f = File::open("./config.yml").expect("can read the config file");
+        let f = File::open("./config.yml").expect("can not read the config file");
         let reader = BufReader::new(f);
 
-        let contents: SystemConfig = from_reader(reader).expect("not a system config");
+        let contents: SystemConfig =
+            from_reader(reader).expect("the file doens't not match the type");
         contents
     }
 }
