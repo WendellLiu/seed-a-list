@@ -6,7 +6,6 @@ use config::{SystemConfig, SYSTEM_CONFIG};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    println!("Hello, world!");
     let system_config_instance = SystemConfig::new();
     SYSTEM_CONFIG.set(system_config_instance).unwrap();
 
