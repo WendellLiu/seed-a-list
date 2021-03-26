@@ -12,8 +12,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let system_config = SystemConfig::global();
 
     let twitter_client = TwitterClient::new(&system_config.twitter.token);
-    let resp = twitter_client.get_mentions(4781015496).await?;
 
+    let resp = twitter_client.get_mentions(4781015496).await?;
+    println!("{:#?}", resp);
+
+    let resp = twitter_client.get_tweets(4781015496).await?;
     println!("{:#?}", resp);
     Ok(())
 }

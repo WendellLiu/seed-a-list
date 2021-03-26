@@ -32,4 +32,12 @@ impl TwitterClient {
             .text()
             .await
     }
+
+    pub async fn get_tweets(&self, user_id: u64) -> Result<String, reqwest::Error> {
+        self.get(format!("/users/{}/tweets", user_id))
+            .send()
+            .await?
+            .text()
+            .await
+    }
 }
