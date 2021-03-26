@@ -1,2 +1,3 @@
 twitter:
+  endpoint: twiiter_api_endpoint
   token: twitter_token_lah 
