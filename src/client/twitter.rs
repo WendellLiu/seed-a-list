@@ -1,14 +1,22 @@
-use std::future::Future;
+use reqwest::header::AUTHORIZATION;
+use reqwest::{Client, IntoUrl, RequestBuilder};
 
-use reqwest::Client;
+pub struct TwitterClient {
+    pub token: String,
+}
 
-pub async fn foo() -> Result<String, reqwest::Error> {
-    let client = Client::new();
+impl TwitterClient {
+    fn get<U: IntoUrl>(&self, url: U) -> RequestBuilder {
+        let client = Client::new();
+        let token = format!("Bearer {}", self.token);
+        client.get(url).header(AUTHORIZATION, token)
+    }
 
-    client
-        .get("https://api.twitter.com/2/users/4781015496/mentions")
-        .send()
-        .await?
-        .text()
-        .await
+    pub async fn get_mentions(&self) -> Result<String, reqwest::Error> {
+        self.get("https://api.twitter.com/2/users/4781015496/mentions")
+            .send()
+            .await?
+            .text()
+            .await
+    }
 }

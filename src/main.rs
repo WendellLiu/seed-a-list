@@ -1,7 +1,7 @@
 mod client;
 mod config;
 
-use client::twitter::foo;
+use client::twitter::TwitterClient;
 use config::{SystemConfig, SYSTEM_CONFIG};
 
 #[tokio::main]
@@ -11,9 +11,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let system_config = SystemConfig::global();
 
-    println!("system config: {}", system_config.twitter.token);
-
-    let resp = foo().await?;
+    let twitter_client = TwitterClient {
+        token: system_config.twitter.token.clone(),
+    };
+    let resp = twitter_client.get_mentions().await?;
 
     println!("{:#?}", resp);
     Ok(())
