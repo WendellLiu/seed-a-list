@@ -18,5 +18,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let resp = twitter_client.get_tweets(4781015496).await?;
     println!("{:#?}", resp);
+
+    let resp = twitter_client
+        .update_status(123, String::from("hello world"))
+        .await?;
+    println!("{:#?}", resp);
     Ok(())
 }
