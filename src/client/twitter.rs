@@ -1,11 +1,32 @@
 use reqwest::header::AUTHORIZATION;
 use reqwest::{Client, RequestBuilder};
+use serde::{Deserialize, Serialize};
 
 use crate::config::SystemConfig;
 
 pub struct TwitterClient {
     pub token: String,
     pub endpoint: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Mention {
+    pub id: String,
+    pub text: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct TwitterMeta {
+    pub oldest_id: String,
+    pub newest_id: String,
+    pub result_count: u32,
+    pub next_token: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct MentionsReponse {
+    pub data: Vec<Mention>,
+    pub meta: TwitterMeta,
 }
 
 impl TwitterClient {
@@ -25,11 +46,11 @@ impl TwitterClient {
         client.get(&url).header(AUTHORIZATION, token)
     }
 
-    pub async fn get_mentions(&self, user_id: u64) -> Result<String, reqwest::Error> {
+    pub async fn get_mentions(&self, user_id: u64) -> Result<MentionsReponse, reqwest::Error> {
         self.get(format!("/users/{}/mentions", user_id))
             .send()
             .await?
-            .text()
+            .json()
             .await
     }
 
