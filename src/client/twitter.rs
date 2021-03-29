@@ -10,7 +10,7 @@ pub struct TwitterClient {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct Mention {
+pub struct Tweet {
     pub id: String,
     pub text: String,
 }
@@ -24,8 +24,14 @@ pub struct TwitterMeta {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct MentionsReponse {
-    pub data: Vec<Mention>,
+pub struct MentionsResponse {
+    pub data: Vec<Tweet>,
+    pub meta: TwitterMeta,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct TweetsResponse {
+    pub data: Vec<Tweet>,
     pub meta: TwitterMeta,
 }
 
@@ -46,7 +52,7 @@ impl TwitterClient {
         client.get(&url).header(AUTHORIZATION, token)
     }
 
-    pub async fn get_mentions(&self, user_id: u64) -> Result<MentionsReponse, reqwest::Error> {
+    pub async fn get_mentions(&self, user_id: u64) -> Result<MentionsResponse, reqwest::Error> {
         self.get(format!("/users/{}/mentions", user_id))
             .send()
             .await?
@@ -54,11 +60,11 @@ impl TwitterClient {
             .await
     }
 
-    pub async fn get_tweets(&self, user_id: u64) -> Result<String, reqwest::Error> {
+    pub async fn get_tweets(&self, user_id: u64) -> Result<TweetsResponse, reqwest::Error> {
         self.get(format!("/users/{}/tweets", user_id))
             .send()
             .await?
-            .text()
+            .json()
             .await
     }
 }
