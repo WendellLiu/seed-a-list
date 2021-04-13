@@ -9,6 +9,7 @@ use serde_yaml::from_reader;
 pub struct TwitterConfig {
     pub token: String,
     pub endpoint: String,
+    pub official_account_id: u64,
 }
 
 #[derive(Debug, PartialEq, Serialize, Deserialize)]

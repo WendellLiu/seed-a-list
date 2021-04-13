@@ -13,14 +13,18 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let twitter_client = TwitterClient::new(&system_config.twitter.token);
 
-    let resp = twitter_client.get_mentions(4781015496).await?;
-    println!("{:#?}", resp);
-
-    let resp = twitter_client.get_tweets(4781015496).await?;
+    let resp = twitter_client
+        .get_mentions(system_config.twitter.official_account_id)
+        .await?;
     println!("{:#?}", resp);
 
     let resp = twitter_client
-        .update_status(123, String::from("hello world"))
+        .get_tweets(system_config.twitter.official_account_id)
+        .await?;
+    println!("{:#?}", resp);
+
+    let resp = twitter_client
+        .update_status(1364619242335727616, String::from("Cut the SHIT!"))
         .await?;
     println!("{:#?}", resp);
     Ok(())

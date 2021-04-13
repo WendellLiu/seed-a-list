@@ -17,15 +17,15 @@ pub struct Tweet {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct TwitterMeta {
-    pub oldest_id: String,
-    pub newest_id: String,
+    pub oldest_id: Option<String>,
+    pub newest_id: Option<String>,
     pub result_count: u32,
-    pub next_token: String,
+    pub next_token: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct MentionsResponse {
-    pub data: Vec<Tweet>,
+    pub data: Option<Vec<Tweet>>,
     pub meta: TwitterMeta,
 }
 
