@@ -1,10 +1,8 @@
-use std::io::BufReader;
-use std::{env, fs::File};
+use std::env;
 
 use dotenv::dotenv;
 use once_cell::sync::OnceCell;
 use serde::{Deserialize, Serialize};
-use serde_yaml::from_reader;
 
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct TwitterConfig {
