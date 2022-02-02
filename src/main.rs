@@ -1,5 +1,10 @@
 mod client;
 mod config;
+mod models;
+mod schema;
+
+#[macro_use]
+extern crate diesel;
 
 use client::twitter::TwitterClient;
 use config::{SystemConfig, SYSTEM_CONFIG};

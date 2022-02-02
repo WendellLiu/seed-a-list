@@ -75,6 +75,7 @@ dependencies = [
  "byteorder",
  "diesel_derives",
  "mysqlclient-sys",
+ "serde_json",
  "url 1.7.2",
 ]
 

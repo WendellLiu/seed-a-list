@@ -1,12 +1,10 @@
 -- Your SQL goes here
-CREATE TABLE reviews (
+CREATE TABLE review_tags (
   id INT AUTO_INCREMENT,
-  external_author_id VARCHAR(50) NOT NULL,
-  external_id VARCHAR(50) NOT NULL,
-  source VARCHAR(20) NOT NULL,
-  content TEXT,
+  review_id INT NOT NULL,
+  name VARCHAR(100) NOT NULL,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY(id),
-  INDEX (external_author_id)
+  INDEX review_tag_name (review_id, name)
 );
