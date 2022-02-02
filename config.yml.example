@@ -2,3 +2,8 @@ twitter:
   endpoint: twiiter_api_endpoint
   token: twitter_token_lah 
   official_account_id: official_account_id 
+mysql:
+  endpoint: mysql_endpoint 
+  username: username
+  password: password
+

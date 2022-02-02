@@ -1,6 +1,7 @@
-use std::fs::File;
 use std::io::BufReader;
+use std::{env, fs::File};
 
+use dotenv::dotenv;
 use once_cell::sync::OnceCell;
 use serde::{Deserialize, Serialize};
 use serde_yaml::from_reader;
@@ -12,9 +13,36 @@ pub struct TwitterConfig {
     pub official_account_id: u64,
 }
 
+impl TwitterConfig {
+    pub fn new() -> TwitterConfig {
+        TwitterConfig {
+            token: env::var("TWITTER_TOKEN").unwrap(),
+            endpoint: env::var("TWITTER_ENDPOINT").unwrap(),
+            official_account_id: env::var("TWITTER_OFFICIAL_ACCOUNT_ID")
+                .unwrap()
+                .parse::<u64>()
+                .unwrap(),
+        }
+    }
+}
+
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
+pub struct MysqlConfig {
+    pub endpoint: String,
+}
+
+impl MysqlConfig {
+    pub fn new() -> MysqlConfig {
+        MysqlConfig {
+            endpoint: env::var("DATABASE_URL").unwrap(),
+        }
+    }
+}
+
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct SystemConfig {
     pub twitter: TwitterConfig,
+    pub mysql: MysqlConfig,
 }
 
 impl SystemConfig {
@@ -25,12 +53,12 @@ impl SystemConfig {
     }
 
     pub fn new() -> SystemConfig {
-        let f = File::open("./config.yml").expect("can not read the config file");
-        let reader = BufReader::new(f);
+        dotenv().expect("Failed to read .env file");
 
-        let contents: SystemConfig =
-            from_reader(reader).expect("the file doens't not match the type");
-        contents
+        SystemConfig {
+            twitter: TwitterConfig::new(),
+            mysql: MysqlConfig::new(),
+        }
     }
 }
 
