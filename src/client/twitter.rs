@@ -65,8 +65,13 @@ impl TwitterClient {
         client.post(&url).header(AUTHORIZATION, token).json(&body)
     }
 
-    pub async fn get_mentions(&self, user_id: u64) -> Result<MentionsResponse, reqwest::Error> {
+    pub async fn get_mentions(
+        &self,
+        user_id: u64,
+        max_results: u8,
+    ) -> Result<MentionsResponse, reqwest::Error> {
         self.get(format!("/2/users/{}/mentions", user_id))
+            .query(&[("max_results", max_results)])
             .send()
             .await?
             .json()
