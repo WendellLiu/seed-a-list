@@ -13,6 +13,7 @@ pub struct TwitterClient {
 pub struct Tweet {
     pub id: String,
     pub text: String,
+    pub author_id: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -60,6 +61,7 @@ impl TwitterClient {
     ) -> Result<MentionsResponse, reqwest::Error> {
         self.get(format!("/2/users/{}/mentions", user_id))
             .query(&[("max_results", max_results)])
+            .query(&[("tweet.fields", "id,text"), ("expansions", "author_id")])
             .send()
             .await?
             .json()
