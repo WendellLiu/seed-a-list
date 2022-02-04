@@ -1,5 +1,6 @@
 mod client;
 mod config;
+mod db;
 mod models;
 mod schema;
 
@@ -10,13 +11,8 @@ use diesel::prelude::*;
 
 use client::twitter::TwitterClient;
 use config::{SystemConfig, SYSTEM_CONFIG};
-
-use crate::models::reviews::{NewReview, Review};
-
-pub fn establish_connection(database_url: &String) -> MysqlConnection {
-    MysqlConnection::establish(&database_url)
-        .unwrap_or_else(|_| panic!("Error connecting to {}", database_url))
-}
+use db::pool::establish_pool;
+use models::reviews::NewReview;
 
 pub fn create_review(
     conn: &MysqlConnection,
@@ -54,12 +50,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .await?;
     println!("{:#?}", resp);
 
-    let mysql_conn = establish_connection(&system_config.mysql.endpoint);
+    let pool = establish_pool(&system_config.mysql.endpoint);
 
     match resp.data {
         Some(d) => d.iter().for_each(|tweet| {
             create_review(
-                &mysql_conn,
+                &pool.get().unwrap(),
                 &tweet.author_id,
                 &tweet.id,
                 &String::from("twitter"),
