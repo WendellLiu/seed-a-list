@@ -65,14 +65,5 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         None => (),
     };
 
-    //let resp = twitter_client
-    //.get_tweets(system_config.twitter.official_account_id)
-    //.await?;
-    //println!("{:#?}", resp);
-
-    //let resp = twitter_client
-    //.update_status(1364619242335727616, String::from("Cut the SHIT!"))
-    //.await?;
-    //println!("{:#?}", resp);
     Ok(())
 }
