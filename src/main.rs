@@ -1,7 +1,9 @@
 mod client;
 mod config;
 mod db;
+mod domain;
 mod models;
+mod repository;
 mod schema;
 
 #[macro_use]
