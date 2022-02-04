@@ -9,34 +9,13 @@ mod schema;
 #[macro_use]
 extern crate diesel;
 
-use diesel::prelude::*;
+use std::sync::Arc;
 
 use client::twitter::TwitterClient;
 use config::{SystemConfig, SYSTEM_CONFIG};
 use db::pool::establish_pool;
-use models::reviews::t::{NewReview, Source};
-
-pub fn create_review(
-    conn: &MysqlConnection,
-    external_author_id: &String,
-    external_id: &String,
-    source: Source,
-    content: &String,
-) {
-    use schema::reviews::dsl::reviews;
-
-    let new_post = NewReview {
-        external_id,
-        external_author_id,
-        source,
-        content: Some(content),
-    };
-
-    diesel::insert_into(reviews)
-        .values(&new_post)
-        .execute(conn)
-        .expect("Error saving new post");
-}
+use domain::reviews::create_reviews;
+use repository::reviews::MysqlRepository;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -53,19 +32,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("{:#?}", resp);
 
     let pool = establish_pool(&system_config.mysql.endpoint);
-
-    match resp.data {
-        Some(d) => d.iter().for_each(|tweet| {
-            create_review(
-                &pool.get().unwrap(),
-                &tweet.author_id,
-                &tweet.id,
-                Source::Twitter,
-                &tweet.text,
-            );
-        }),
-        None => (),
-    };
+    let repo = MysqlRepository { pool };
+    create_reviews(Arc::new(repo), resp);
 
     Ok(())
 }
