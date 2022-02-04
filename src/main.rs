@@ -12,13 +12,13 @@ use diesel::prelude::*;
 use client::twitter::TwitterClient;
 use config::{SystemConfig, SYSTEM_CONFIG};
 use db::pool::establish_pool;
-use models::reviews::NewReview;
+use models::reviews::{NewReview, Source};
 
 pub fn create_review(
     conn: &MysqlConnection,
     external_author_id: &String,
     external_id: &String,
-    source: &String,
+    source: Source,
     content: &String,
 ) {
     use schema::reviews::dsl::reviews;
@@ -58,7 +58,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 &pool.get().unwrap(),
                 &tweet.author_id,
                 &tweet.id,
-                &String::from("twitter"),
+                Source::Twitter,
                 &tweet.text,
             );
         }),
