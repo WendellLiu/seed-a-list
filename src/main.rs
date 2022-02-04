@@ -12,7 +12,7 @@ use diesel::prelude::*;
 use client::twitter::TwitterClient;
 use config::{SystemConfig, SYSTEM_CONFIG};
 use db::pool::establish_pool;
-use models::reviews::{NewReview, Source};
+use models::reviews::t::{NewReview, Source};
 
 pub fn create_review(
     conn: &MysqlConnection,
