@@ -17,9 +17,18 @@ fn parse_tags(content: &String) -> Vec<String> {
 }
 
 fn create_review(repo: Arc<dyn Repository>, tweet: &Tweet) {
-    match repo.insert(&tweet.author_id, &tweet.id, Source::Twitter, &tweet.text) {
+    let tags = parse_tags(&tweet.text);
+
+    match repo.insert(
+        &tweet.author_id,
+        &tweet.id,
+        Source::Twitter,
+        &tweet.text,
+        &tags,
+    ) {
         Ok(()) => (),
         Err(InsertError::Duplicattion) => (),
+        Err(InsertError::Transaction) => (),
     }
 }
 
