@@ -4,6 +4,3 @@ twitter:
   official_account_id: official_account_id 
 mysql:
   endpoint: mysql_endpoint 
-  username: username
-  password: password
-
