@@ -1,6 +1,6 @@
 twitter:
-  endpoint: twiiter_api_endpoint
+  endpoint: https://api.twitter.com
   token: twitter_token_lah 
-  official_account_id: official_account_id 
+  official_account_id: 1363914031543644160 
 mysql:
-  endpoint: mysql_endpoint 
+  endpoint: mysql://127.0.0.1:3306/seed-a-list 
