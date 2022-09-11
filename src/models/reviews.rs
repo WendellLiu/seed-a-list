@@ -16,10 +16,7 @@ pub mod t {
     where
         str: ToSql<VarChar, DB>,
     {
-        fn to_sql<W>(&self, out: &mut Output<W, DB>) -> serialize::Result
-        where
-            W: io::Write,
-        {
+        fn to_sql<'b>(&self, out: &mut Output<'b, '_, DB>) -> serialize::Result {
             let v: &str = match *self {
                 Source::Twitter => "Twitter",
             };

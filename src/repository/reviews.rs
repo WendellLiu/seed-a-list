@@ -37,7 +37,7 @@ pub trait Repository: Send + Sync {
         source: Source,
         content: &String,
         tags: &Vec<String>,
-    ) -> Result<(), InsertError>;
+    ) -> Result<usize, InsertError>;
 }
 
 pub struct MysqlRepository {
@@ -51,31 +51,31 @@ impl Repository for MysqlRepository {
         external_id: &String,
         source: Source,
         content: &String,
-        tags: &Vec<String>,
-    ) -> Result<(), InsertError> {
+        _tags: &Vec<String>,
+    ) -> Result<usize, InsertError> {
         let pool = &self.pool;
-        let conn = pool.get().unwrap();
+        let mut conn = pool.get().unwrap();
 
-        conn.transaction(|| {
-            let new_review = NewReview {
-                external_id,
-                external_author_id,
-                source,
-                content: Some(content),
-            };
+        let new_review = NewReview {
+            external_id,
+            external_author_id,
+            source,
+            content: Some(content),
+        };
 
-            //let new_reveiw_tags =
+        //let new_reveiw_tags =
 
-            diesel::insert_into(reviews)
-                .values(&new_post)
-                .execute(&conn)
-                .map(|_| ());
+        diesel::insert_into(reviews)
+            .values(&new_review)
+            .execute(&mut conn)
+            .map_err(|e| InsertError::from(e))
+        //conn.transaction(|_| {
 
-            diesel::insert_into(review_tags)
-                .values(&new_review)
-                .execute(&conn)
-                .map(|_| ())
-        })
-        .map_err(|e| InsertError::from(e))
+        ////diesel::insert_into(review_tags)
+        ////.values(&new_review)
+        ////.execute(&conn)
+        ////.map(|_| ())
+        //})
+        //.map_err(|e| InsertError::from(e))
     }
 }

@@ -1,9 +1,9 @@
 mod client;
 mod config;
 mod db;
-//mod domain;
-//mod models;
-//mod repository;
+mod domain;
+mod models;
+mod repository;
 mod schema;
 
 #[macro_use]
@@ -13,9 +13,9 @@ use std::sync::Arc;
 
 use client::twitter::TwitterClient;
 use config::{SystemConfig, SYSTEM_CONFIG};
-//use db::pool::establish_pool;
-//use domain::reviews::create_reviews;
-//use repository::reviews::MysqlRepository;
+use db::pool::establish_pool;
+use domain::reviews::create_reviews;
+use repository::reviews::MysqlRepository;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -31,9 +31,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .await?;
     println!("{:#?}", resp);
 
-    //let pool = establish_pool(&system_config.mysql.endpoint);
-    //let repo = MysqlRepository { pool };
-    //create_reviews(Arc::new(repo), resp);
+    let pool = establish_pool(&system_config.mysql.endpoint);
+    let repo = MysqlRepository { pool };
+    create_reviews(Arc::new(repo), resp);
 
     Ok(())
 }

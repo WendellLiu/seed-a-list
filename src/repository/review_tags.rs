@@ -24,12 +24,12 @@ pub struct MysqlRepository {
 impl Repository for MysqlRepository {
     fn insert(&self, review_id: i32, name: &String) -> Result<(), InsertError> {
         let pool = &self.pool;
-        let conn = pool.get().unwrap();
+        let mut conn = pool.get().unwrap();
         let new_post = NewReviewTag { review_id, name };
 
         match diesel::insert_into(review_tags)
             .values(&new_post)
-            .execute(&conn)
+            .execute(&mut conn)
         {
             Ok(_affected_rows) => Ok(()),
             Err(DatabaseError(UniqueViolation, info)) => {

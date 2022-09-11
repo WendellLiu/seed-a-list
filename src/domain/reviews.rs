@@ -26,7 +26,7 @@ fn create_review(repo: Arc<dyn Repository>, tweet: &Tweet) {
         &tweet.text,
         &tags,
     ) {
-        Ok(()) => (),
+        Ok(_count) => (),
         Err(InsertError::Duplicattion) => (),
         Err(InsertError::Transaction) => (),
     }
