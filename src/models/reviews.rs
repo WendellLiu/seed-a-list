@@ -1,13 +1,13 @@
 pub mod t {
     use crate::schema::reviews;
 
+    use chrono::NaiveDateTime;
     use diesel::backend::Backend;
     use diesel::serialize::{self, Output, ToSql};
     use diesel::sql_types::VarChar;
-    use std::io;
 
     #[derive(Debug, Copy, Clone, AsExpression, FromSqlRow)]
-    #[sql_type = "VarChar"]
+    #[diesel(sql_type = VarChar)]
     pub enum Source {
         Twitter,
     }
@@ -25,16 +25,18 @@ pub mod t {
     }
 
     #[derive(Queryable)]
-    pub struct Review<'a> {
+    pub struct Review {
         pub id: i32,
-        pub external_author_id: &'a str,
-        pub external_id: &'a str,
-        pub source: &'a str,
-        pub content: Option<&'a str>,
+        pub external_author_id: String,
+        pub external_id: String,
+        pub source: String,
+        pub content: Option<String>,
+        pub created_at: Option<NaiveDateTime>,
+        pub updated_at: Option<NaiveDateTime>,
     }
 
     #[derive(Insertable)]
-    #[table_name = "reviews"]
+    #[diesel(table_name = reviews)]
     pub struct NewReview<'a> {
         pub external_author_id: &'a str,
         pub external_id: &'a str,

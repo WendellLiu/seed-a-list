@@ -1,4 +1,6 @@
-table! {
+// @generated automatically by Diesel CLI.
+
+diesel::table! {
     review_tags (id) {
         id -> Integer,
         review_id -> Integer,
@@ -8,7 +10,7 @@ table! {
     }
 }
 
-table! {
+diesel::table! {
     reviews (id) {
         id -> Integer,
         external_author_id -> Varchar,
@@ -20,7 +22,7 @@ table! {
     }
 }
 
-allow_tables_to_appear_in_same_query!(
+diesel::allow_tables_to_appear_in_same_query!(
     review_tags,
     reviews,
 );

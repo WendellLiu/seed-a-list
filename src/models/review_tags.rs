@@ -9,7 +9,7 @@ pub mod t {
     }
 
     #[derive(Insertable)]
-    #[table_name = "review_tags"]
+    #[diesel(table_name = review_tags)]
     pub struct NewReviewTag<'a> {
         pub review_id: i32,
         pub name: &'a str,

@@ -7,7 +7,7 @@ use crate::models::reviews::t::Source;
 use crate::repository::reviews::{InsertError, Repository};
 
 fn parse_tags(content: &String) -> Vec<String> {
-    let re = Regex::new(r"(#(?P<hashtag>[a-z\d-]+))").unwrap();
+    let re = Regex::new(r"(#(?P<hashtag>[\w-]+))").unwrap();
     let mut hashtags = Vec::new();
     for caps in re.captures_iter(content) {
         hashtags.push(String::from(&caps["hashtag"]));
@@ -48,8 +48,8 @@ mod test {
     #[test]
     fn it_should_parse_tags() {
         let tags = parse_tags(&String::from(
-            "https://example.com/music1 \n it's a great song! #happy and #upset",
+            "https://example.com/music1 \n it's a great song! #happy and #upset \n\n#CityPop",
         ));
-        assert_eq!(tags, vec!["happy", "upset"]);
+        assert_eq!(tags, vec!["happy", "upset", "CityPop"]);
     }
 }

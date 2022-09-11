@@ -8,5 +8,6 @@ CREATE TABLE reviews (
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY(id),
-  INDEX (external_author_id)
+  INDEX (external_author_id),
+  CONSTRAINT source_external_id UNIQUE (source, external_id)
 );
