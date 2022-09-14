@@ -4,7 +4,7 @@ use regex::Regex;
 
 use crate::client::twitter::{MentionsResponse, Tweet};
 use crate::models::reviews::t::Source;
-use crate::repository::reviews::{InsertError, Repository};
+use crate::repository::reviews::{InsertError, Repository, ReviewWithTags};
 
 fn parse_tags(content: &String) -> Vec<String> {
     let re = Regex::new(r"(#(?P<hashtag>[\w-]+))").unwrap();
@@ -19,13 +19,15 @@ fn parse_tags(content: &String) -> Vec<String> {
 fn create_review(repo: Arc<dyn Repository>, tweet: &Tweet) {
     let tags = parse_tags(&tweet.text);
 
-    match repo.insert(
-        &tweet.author_id,
-        &tweet.id,
-        Source::Twitter,
-        &tweet.text,
-        &tags,
-    ) {
+    let review_with_tags = ReviewWithTags {
+        external_author_id: &tweet.author_id,
+        external_id: &tweet.id,
+        source: Source::Twitter,
+        content: &tweet.text,
+        tags,
+    };
+
+    match repo.insert(review_with_tags) {
         Ok(_count) => (),
         Err(InsertError::Duplicattion) => (),
         Err(InsertError::Transaction) => (),
