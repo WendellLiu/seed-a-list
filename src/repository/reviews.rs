@@ -14,7 +14,7 @@ use crate::schema::reviews::dsl::reviews;
 
 #[derive(Debug)]
 pub enum InsertError {
-    Duplicattion,
+    Duplication,
     Transaction,
 }
 
@@ -23,7 +23,7 @@ impl From<Error> for InsertError {
         match e {
             Error::DatabaseError(UniqueViolation, info) => {
                 println!("{}", info.message());
-                InsertError::Duplicattion
+                InsertError::Duplication
             }
             Error::RollbackTransaction => InsertError::Transaction,
             e => panic_any(e),

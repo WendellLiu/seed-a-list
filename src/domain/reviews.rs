@@ -16,7 +16,12 @@ fn parse_tags(content: &String) -> Vec<String> {
     hashtags
 }
 
-fn create_review(repo: Arc<dyn Repository>, tweet: &Tweet) {
+pub enum CreateReviewError {
+    DBError,
+    InvalidResponse,
+}
+
+fn create_review(repo: Arc<dyn Repository>, tweet: &Tweet) -> Result<(), CreateReviewError> {
     let tags = parse_tags(&tweet.text);
 
     let review_with_tags = ReviewWithTags {
@@ -27,14 +32,17 @@ fn create_review(repo: Arc<dyn Repository>, tweet: &Tweet) {
     };
 
     match repo.insert(review_with_tags, Source::Twitter) {
-        Ok(_count) => (),
-        Err(InsertError::Duplicattion) => (),
-        Err(InsertError::Transaction) => (),
+        Ok(_count) => Ok(()),
+        Err(InsertError::Duplication) => Err(CreateReviewError::DBError),
+        Err(InsertError::Transaction) => Err(CreateReviewError::DBError),
     }
 }
 
-pub fn create_reviews(repo: Arc<dyn Repository>, resp: MentionsResponse) {
-    match resp.data {
+pub fn create_reviews(
+    repo: Arc<dyn Repository>,
+    resp: MentionsResponse,
+) -> Result<(), CreateReviewError> {
+    let resp = match resp.data {
         Some(tweets) => {
             let review_with_tags_list = tweets
                 .into_iter()
@@ -50,10 +58,16 @@ pub fn create_reviews(repo: Arc<dyn Repository>, resp: MentionsResponse) {
                 })
                 .collect();
 
-            repo.insert_multi(review_with_tags_list, Source::Twitter);
+            repo.insert_multi(review_with_tags_list, Source::Twitter)
         }
-        None => (),
+        None => return Err(CreateReviewError::InvalidResponse),
     };
+
+    match resp {
+        Ok(_) => Ok(()),
+        Err(InsertError::Duplication) => Err(CreateReviewError::DBError),
+        Err(InsertError::Transaction) => Err(CreateReviewError::DBError),
+    }
 }
 
 #[cfg(test)]
