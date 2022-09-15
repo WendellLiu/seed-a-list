@@ -20,14 +20,13 @@ fn create_review(repo: Arc<dyn Repository>, tweet: &Tweet) {
     let tags = parse_tags(&tweet.text);
 
     let review_with_tags = ReviewWithTags {
-        external_author_id: &tweet.author_id,
-        external_id: &tweet.id,
-        source: Source::Twitter,
-        content: &tweet.text,
+        external_author_id: tweet.author_id.clone(),
+        external_id: tweet.id.clone(),
+        content: tweet.text.clone(),
         tags,
     };
 
-    match repo.insert(review_with_tags) {
+    match repo.insert(review_with_tags, Source::Twitter) {
         Ok(_count) => (),
         Err(InsertError::Duplicattion) => (),
         Err(InsertError::Transaction) => (),
@@ -36,9 +35,23 @@ fn create_review(repo: Arc<dyn Repository>, tweet: &Tweet) {
 
 pub fn create_reviews(repo: Arc<dyn Repository>, resp: MentionsResponse) {
     match resp.data {
-        Some(d) => d
-            .iter()
-            .for_each(|tweet| create_review(repo.clone(), tweet)),
+        Some(tweets) => {
+            let review_with_tags_list = tweets
+                .into_iter()
+                .map(|tweet| {
+                    let tags = parse_tags(&tweet.text);
+
+                    ReviewWithTags {
+                        external_author_id: tweet.author_id,
+                        external_id: tweet.id,
+                        content: tweet.text,
+                        tags,
+                    }
+                })
+                .collect();
+
+            repo.insert_multi(review_with_tags_list, Source::Twitter);
+        }
         None => (),
     };
 }
