@@ -26,13 +26,22 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let twitter_client = TwitterClient::new(&system_config.twitter.token);
 
-    let resp = twitter_client
-        .get_mentions(system_config.twitter.official_account_id, 100)
-        .await?;
+    let request = twitter_client.get_mentions(system_config.twitter.official_account_id, 100);
+
+    let resp = request.await.unwrap();
+    //let resp = match request.await {
+    //Ok(r) => r,
+    //Err(e) => {
+    //println!("cannot get mentions {:?}", e);
+    //return Ok(());
+    //}
+    //};
+
     println!("{:#?}", resp);
 
     let pool = establish_pool(&system_config.mysql.endpoint);
     let repo = MysqlRepository { pool };
+
     create_reviews(Arc::new(repo), resp);
 
     Ok(())

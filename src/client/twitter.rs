@@ -1,5 +1,6 @@
 use reqwest::header::AUTHORIZATION;
 use reqwest::{Client, RequestBuilder};
+use reqwest::{Error, StatusCode};
 use serde::{Deserialize, Serialize};
 
 use crate::config::SystemConfig;
@@ -30,6 +31,34 @@ pub struct MentionsResponse {
     pub meta: TwitterMeta,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub enum TwitterApiError {
+    Unauthorized,
+    DecodeError,
+    SystemError,
+    RequestError,
+}
+
+impl From<Error> for TwitterApiError {
+    fn from(error: Error) -> Self {
+        if error.is_decode() {
+            println!("decode error: {:?}", error);
+            return TwitterApiError::DecodeError;
+        }
+
+        return TwitterApiError::SystemError;
+    }
+}
+
+impl From<StatusCode> for TwitterApiError {
+    fn from(status_code: StatusCode) -> Self {
+        match status_code {
+            StatusCode::UNAUTHORIZED => TwitterApiError::Unauthorized,
+            _ => TwitterApiError::RequestError,
+        }
+    }
+}
+
 impl TwitterClient {
     pub fn new(token: &String) -> TwitterClient {
         let system_config = SystemConfig::global();
@@ -58,13 +87,24 @@ impl TwitterClient {
         &self,
         user_id: u64,
         max_results: u8,
-    ) -> Result<MentionsResponse, reqwest::Error> {
-        self.get(format!("/2/users/{}/mentions", user_id))
+    ) -> Result<MentionsResponse, TwitterApiError> {
+        let resp = self
+            .get(format!("/2/users/{}/mentions", user_id))
             .query(&[("max_results", max_results)])
             .query(&[("tweet.fields", "id,text"), ("expansions", "author_id")])
             .send()
-            .await?
-            .json()
+            .await?;
+
+        resp.error_for_status()
+            .map_err(|e| {
+                let err: TwitterApiError = e.status().unwrap().into();
+                err
+            })?
+            .json::<MentionsResponse>()
             .await
+            .map_err(|e| {
+                let err: TwitterApiError = e.status().unwrap().into();
+                err
+            })
     }
 }
